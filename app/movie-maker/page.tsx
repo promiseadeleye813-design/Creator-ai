@@ -1,0 +1,1 @@
+export default function Page(){return <div style={{padding:20,background:'#000',color:'#fff',minHeight:'100vh'}}><h1>🎬 Movie Maker</h1><p>Inside Video Vault beside Retry All</p><button style={{padding:12,background:'#6d28d9',color:'#fff',borderRadius:8,marginTop:20}}>Render Movie</button></div>}

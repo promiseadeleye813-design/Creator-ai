@@ -32,45 +32,36 @@ export default function Page() {
         <span className="text-emerald-400">Creator</span> AI Green
       </h1>
       <p className="text-center text-gray-400 mt-2">Real AI Video Generator</p>
-
-      {/* MODE BUTTONS - NOW WORKING */}
       <div className="flex gap-2 justify-center mt-6">
         {[
-          { id: "video", label: "🎬 Video" },
-          { id: "image", label: "🖼️ Image" },
-          { id: "story", label: "📖 Story" },
+          { id: "video", label: "Video" },
+          { id: "image", label: "Image" },
+          { id: "story", label: "Story" },
         ].map((m) => (
           <button
             key={m.id}
             onClick={() => setMode(m.id)}
-            className={`px-5 py-3 rounded-full font-bold transition-all ${
-              mode === m.id
-                ? "bg-emerald-500 text-black scale-105"
-                : "bg-zinc-800 text-gray-400"
-            }`}
+            className={`px-5 py-3 rounded-full font-bold ${mode === m.id ? "bg-emerald-500 text-black" : "bg-zinc-800 text-gray-400"}`}
           >
             {m.label}
           </button>
         ))}
       </div>
-
-      {/* INPUT */}
       <div className="max-w-md mx-auto mt-8">
         <div className="bg-zinc-900 rounded-2xl p-4 border border-emerald-900/50">
-          <p className="text-emerald-400 text-sm mb-2">Current mode: {mode.toUpperCase()}</p>
-          <textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder={
-              mode === "video"
-                ? "a cat dancing in Lagos street..."
-                : mode === "image"
-                ? "a beautiful green forest..."
-                : "a story about..."
-            }
-            className="w-full h-28 bg-zinc-800 rounded-xl p-3 text-white outline-none focus:ring-2 focus:ring-emerald-500"
-          />
-          <button
-            onClick={generate}
-            disabled={loading}
-            className="w-full mt-4 bg-emerald-500 hover:bg-emerald-400 text-black font-black py-4 rounded-xl text
+          <p className="text-emerald-400 text-sm mb-2">Mode: {mode.toUpperCase()}</p>
+          <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="a cat dancing..." className="w-full h-28 bg-zinc-800 rounded-xl p-3 text-white outline-none focus:ring-2 focus:ring-emerald-500" />
+          <button onClick={generate} disabled={loading} className="w-full mt-4 bg-emerald-500 hover:bg-emerald-400 text-black font-black py-4 rounded-xl text-lg disabled:opacity-50">
+            {loading ? "Generating..." : `Generate ${mode}`}
+          </button>
+        </div>
+        {result && (
+          <div className="mt-6 bg-zinc-900 rounded-2xl p-4">
+            <p className="text-emerald-400 font-bold mb-2">Done!</p>
+            {typeof result === "string" && result.startsWith("http") ? <video src={result} controls className="w-full rounded-xl" /> : <pre className="text-xs overflow-auto">{JSON.stringify(result, null, 2)}</pre>}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

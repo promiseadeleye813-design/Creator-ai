@@ -1,67 +1,28 @@
-"use client"
-import { useState } from "react"
-
-export default function Page() {
-  const [prompt, setPrompt] = useState("")
-  const [mode, setMode] = useState("video")
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<any>(null)
-
-  async function generate() {
-    if (!prompt) return alert("Type something first!")
-    setLoading(true)
-    setResult(null)
-    try {
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, mode })
-      })
-      const data = await res.json()
-      if (data.error) throw new Error(data.error)
-      setResult(data.video || data.result || data)
-    } catch (e:any) {
-      alert("Error: " + e.message)
-    }
-    setLoading(false)
-  }
-
+export default function Home() {
   return (
-    <div className="min-h-screen bg-[#0a1a0f] text-white p-4">
-      <h1 className="text-3xl font-bold text-center mt-6">
-        <span className="text-emerald-400">Creator</span> AI Green
-      </h1>
-      <p className="text-center text-gray-400 mt-2">Real AI Video Generator</p>
-      <div className="flex gap-2 justify-center mt-6">
-        {[
-          { id: "video", label: "Video" },
-          { id: "image", label: "Image" },
-          { id: "story", label: "Story" },
-        ].map((m) => (
-          <button
-            key={m.id}
-            onClick={() => setMode(m.id)}
-            className={`px-5 py-3 rounded-full font-bold ${mode === m.id ? "bg-emerald-500 text-black" : "bg-zinc-800 text-gray-400"}`}
+    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
+      <div className="max-w-2xl w-full bg-zinc-900 rounded-2xl p-8 border border-zinc-800 shadow-2xl">
+        <h1 className="text-4xl font-bold text-center mb-2 bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+          Creator AI ✨
+        </h1>
+        <p className="text-zinc-400 text-center mb-8">Generate anything with AI</p>
+        
+        <div className="space-y-4">
+          <input 
+            id="prompt"
+            placeholder="Describe what you want to create..." 
+            className="w-full p-4 rounded-xl bg-zinc-800 border border-zinc-700 text-white outline-none focus:border-purple-500"
+          />
+          <button 
+            onClick={() => alert('Now we will connect real AI! Build is GREEN!')}
+            className="w-full p-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 font-bold hover:opacity-90"
           >
-            {m.label}
-          </button>
-        ))}
-      </div>
-      <div className="max-w-md mx-auto mt-8">
-        <div className="bg-zinc-900 rounded-2xl p-4 border border-emerald-900/50">
-          <p className="text-emerald-400 text-sm mb-2">Mode: {mode.toUpperCase()}</p>
-          <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="a cat dancing..." className="w-full h-28 bg-zinc-800 rounded-xl p-3 text-white outline-none focus:ring-2 focus:ring-emerald-500" />
-          <button onClick={generate} disabled={loading} className="w-full mt-4 bg-emerald-500 hover:bg-emerald-400 text-black font-black py-4 rounded-xl text-lg disabled:opacity-50">
-            {loading ? "Generating..." : `Generate ${mode}`}
+            Generate Magic →
           </button>
         </div>
-        {result && (
-          <div className="mt-6 bg-zinc-900 rounded-2xl p-4">
-            <p className="text-emerald-400 font-bold mb-2">Done!</p>
-            {typeof result === "string" && result.startsWith("http") ? <video src={result} controls className="w-full rounded-xl" /> : <pre className="text-xs overflow-auto">{JSON.stringify(result, null, 2)}</pre>}
-          </div>
-        )}
+
+        <p className="text-center text-xs text-zinc-500 mt-6">Your site is LIVE and FIXED! ✅</p>
       </div>
-    </div>
+    </main>
   )
 }

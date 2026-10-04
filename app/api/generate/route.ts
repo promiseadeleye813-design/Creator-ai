@@ -1,59 +1,46 @@
 import { NextResponse } from "next/server";
-
-export const runtime = "nodejs";
-
-type GenerateRequest = {
-  prompt?: string;
-  aspectRatio?: "9:16" | "16:9" | "1:1";
-  duration?: number;
-};
+import { fal } from "@fal-ai/client";
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as GenerateRequest;
+    const { prompt } = await req.json();
 
-    const prompt = body.prompt?.trim();
-
-    if (!prompt) {
+    if (!prompt || typeof prompt !== "string") {
       return NextResponse.json(
-        {
-          success: false,
-          error: "Please enter a video prompt.",
-        },
+        { error: "A prompt is required." },
         { status: 400 }
       );
     }
 
-    /*
-     * Creator AI generation request
-     *
-     * This endpoint prepares the generation job.
-     * The actual video model can be connected here without
-     * changing the frontend.
-     */
+    if (!process.env.FAL_KEY) {
+      return NextResponse.json(
+        { error: "FAL_KEY is not configured." },
+        { status: 500 }
+      );
+    }
 
-    const job = {
-      id: crypto.randomUUID(),
-      prompt,
-      aspectRatio: body.aspectRatio ?? "9:16",
-      duration: Math.min(Math.max(body.duration ?? 18, 18), 120),
-      status: "queued",
-      createdAt: new Date().toISOString(),
-    };
+    fal.config({
+      credentials: process.env.FAL_KEY,
+    });
+
+    const result = await fal.subscribe("fal-ai/kling-video/v2.1/standard/text-to-video", {
+      input: {
+        prompt,
+        duration: "5",
+        aspect_ratio: "9:16",
+      },
+      logs: true,
+    });
 
     return NextResponse.json({
       success: true,
-      message: "Video generation job created.",
-      job,
+      video: result.data,
     });
   } catch (error) {
-    console.error("Creator AI generation error:", error);
+    console.error("Video generation error:", error);
 
     return NextResponse.json(
-      {
-        success: false,
-        error: "Something went wrong while creating the generation job.",
-      },
+      { error: "Video generation failed." },
       { status: 500 }
     );
   }
@@ -61,9 +48,6 @@ export async function POST(req: Request) {
 
 export async function GET() {
   return NextResponse.json({
-    success: true,
-    service: "Creator AI",
-    status: "online",
-    message: "Creator AI generation API is running.",
+    status: "Creator AI video API is running",
   });
 }
